@@ -1,0 +1,11 @@
+package gomodhelper // import "github.com/ryanduan/demoplugin/go-helper"
+
+
+FUNCTIONS
+
+func LatestVersion(module, proxy string) (string, error)
+    LatestVersion 通过指定代理获取指定模块的最新版本，返回版本号字符串。
+
+func SearchPackages(keyword string, limit int) ([]string, error)
+    SearchPackages 使用 godoc 搜索接口按关键词进行包搜索，返回 import 路径列表。
+

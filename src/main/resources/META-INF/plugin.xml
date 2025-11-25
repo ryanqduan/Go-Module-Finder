@@ -1,0 +1,52 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html --><!DOCTYPE idea-plugin [
+	<!ELEMENT idea-plugin (id|name|vendor|description|depends|extensions|actions)*>
+	<!ELEMENT id (#PCDATA)>
+	<!ELEMENT name (#PCDATA)>
+	<!ELEMENT vendor (#PCDATA)>
+	<!ATTLIST vendor
+		url CDATA #REQUIRED>
+	<!ELEMENT description (#PCDATA)>
+	<!ELEMENT depends (#PCDATA)>
+	<!ELEMENT extensions (#PCDATA)>
+	<!ATTLIST extensions
+		defaultExtensionNs CDATA #REQUIRED>
+	<!ELEMENT actions (action)*>
+	<!ELEMENT action (add-to-group)*>
+	<!ATTLIST action
+		id CDATA #REQUIRED
+		text CDATA #REQUIRED
+		class CDATA #REQUIRED>
+	<!ELEMENT add-to-group (#PCDATA)>
+	<!ATTLIST add-to-group
+		group-id CDATA #REQUIRED
+		anchor CDATA #REQUIRED>
+	]>
+<idea-plugin>
+	<!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+	<id>dev.ryanduan.demoplugin</id>
+
+	<!-- Public plugin name should be written in Title Case.
+		 Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
+	<name>Demoplugin</name>
+
+	<!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+	<vendor url="https://www.ryanduan.dev">ryanduan</vendor>
+
+	<!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+		 Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
+	<description>
+		ryan duan's first plugin, demonstrating the basic structure of a plugin.
+	</description>
+
+	<!-- Product and plugin compatibility requirements.
+		 Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+<depends>com.intellij.modules.platform</depends>
+
+	<!-- Extension points defined by the plugin.
+		 Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+	<extensions defaultExtensionNs="com.intellij">
+		<toolWindow id="Go Module Finder" anchor="left" factoryClass="dev.ryanduan.demoplugin.ui.GoModuleToolWindowFactory"/>
+		<notificationGroup id="GoModulePlugin" displayType="BALLOON" isLogByDefault="true"/>
+		<projectConfigurable instance="dev.ryanduan.demoplugin.settings.GoModuleSettingsConfigurable" id="GoModuleFinderSettings" displayName="Go Module Finder"/> 
+	</extensions>
+</idea-plugin>
