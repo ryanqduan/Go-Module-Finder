@@ -1,26 +1,4 @@
-<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html --><!DOCTYPE idea-plugin [
-	<!ELEMENT idea-plugin (id|name|vendor|description|depends|extensions|actions)*>
-	<!ELEMENT id (#PCDATA)>
-	<!ELEMENT name (#PCDATA)>
-	<!ELEMENT vendor (#PCDATA)>
-	<!ATTLIST vendor
-		url CDATA #REQUIRED>
-	<!ELEMENT description (#PCDATA)>
-	<!ELEMENT depends (#PCDATA)>
-	<!ELEMENT extensions (#PCDATA)>
-	<!ATTLIST extensions
-		defaultExtensionNs CDATA #REQUIRED>
-	<!ELEMENT actions (action)*>
-	<!ELEMENT action (add-to-group)*>
-	<!ATTLIST action
-		id CDATA #REQUIRED
-		text CDATA #REQUIRED
-		class CDATA #REQUIRED>
-	<!ELEMENT add-to-group (#PCDATA)>
-	<!ATTLIST add-to-group
-		group-id CDATA #REQUIRED
-		anchor CDATA #REQUIRED>
-	]>
+<?xml version="1.0" encoding="UTF-8"?>
 <idea-plugin>
 	<!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
 	<id>dev.ryanduan.gomodulefinder</id>
