@@ -1,4 +1,4 @@
-package dev.ryanduan.demoplugin.settings
+package dev.ryanduan.gomodulefinder.settings
 
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
@@ -11,7 +11,8 @@ class GoModuleSettingsState : PersistentStateComponent<GoModuleSettingsState.Sta
     class State {
         var defaultSource: String = "OFFICIAL"
         var goPath: String = "go"
-        var librariesApiKey: String = "e2a7a629051f43c44cd839f7033bd245"
+        var librariesApiKey: String = ""
+        var customProxy: String = ""
     }
 
     private var myState = State()

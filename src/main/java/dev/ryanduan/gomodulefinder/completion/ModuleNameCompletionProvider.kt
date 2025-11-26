@@ -1,9 +1,9 @@
-package dev.ryanduan.demoplugin.completion
+package dev.ryanduan.gomodulefinder.completion
 
 import com.intellij.ui.TextFieldWithAutoCompletion
-import dev.ryanduan.demoplugin.service.ModuleQuery
-import dev.ryanduan.demoplugin.service.ModuleSearchService
-import dev.ryanduan.demoplugin.service.Source
+import dev.ryanduan.gomodulefinder.service.ModuleQuery
+import dev.ryanduan.gomodulefinder.service.ModuleSearchService
+import dev.ryanduan.gomodulefinder.service.Source
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.util.concurrency.AppExecutorUtil
 import java.util.concurrent.ScheduledFuture

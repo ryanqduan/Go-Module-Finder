@@ -1,54 +1,60 @@
-package dev.ryanduan.demoplugin.ui
+package dev.ryanduan.gomodulefinder.ui
 
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
-import javax.swing.JButton
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.ui.TextFieldWithAutoCompletion
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
-import com.intellij.ui.TextFieldWithAutoCompletion
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.JBUI
-import dev.ryanduan.demoplugin.service.ModuleInfo
-import dev.ryanduan.demoplugin.service.ModuleQuery
-import dev.ryanduan.demoplugin.service.ModuleSearchService
-import dev.ryanduan.demoplugin.service.Source
-import dev.ryanduan.demoplugin.exec.GoDownloader
-import dev.ryanduan.demoplugin.settings.GoModuleSettingsState
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.Task
-import com.intellij.util.concurrency.AppExecutorUtil
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import javax.swing.ListSelectionModel
+import com.intellij.ui.SimpleListCellRenderer
+import dev.ryanduan.gomodulefinder.GoModuleBundle
+import dev.ryanduan.gomodulefinder.exec.GoDownloader
+import dev.ryanduan.gomodulefinder.service.ModuleInfo
+import dev.ryanduan.gomodulefinder.service.ModuleQuery
+import dev.ryanduan.gomodulefinder.service.ModuleSearchService
+import dev.ryanduan.gomodulefinder.service.Source
+import dev.ryanduan.gomodulefinder.settings.GoModuleSettingsState
+import javax.swing.JButton
 import javax.swing.JPanel
 import javax.swing.JScrollPane
+import javax.swing.ListSelectionModel
 import javax.swing.table.DefaultTableModel
 
 class GoModuleToolWindow(private val project: Project) {
     private lateinit var nameAuto: TextFieldWithAutoCompletion<String>
-    private val nameFieldProvider = dev.ryanduan.demoplugin.completion.ModuleNameCompletionProvider { nameAuto.text }
+    private val nameFieldProvider = dev.ryanduan.gomodulefinder.completion.ModuleNameCompletionProvider { nameAuto.text }
     private val authorField = JBTextField()
     private val versionField = JBTextField()
     private val sourceBox = ComboBox(Source.values())
-    private val searchButton = JButton("搜索")
-    private val downloadButton = JButton("下载")
-    private val tableModel = DefaultTableModel(arrayOf("模块", "最新版本", "来源"), 0)
+    private val searchButton = JButton(GoModuleBundle.message("ui.search.button"))
+    private val downloadButton = JButton(GoModuleBundle.message("ui.download.button"))
+    private val tableModel = DefaultTableModel(arrayOf(
+        GoModuleBundle.message("ui.table.module"),
+        GoModuleBundle.message("ui.table.latest"),
+        GoModuleBundle.message("ui.table.source")
+    ), 0)
     private val table = JBTable(tableModel)
     private val selectedVersions = mutableMapOf<String, String>()
     private var latestResults: List<ModuleInfo> = emptyList()
 
     val component: JPanel = JBPanel<JBPanel<*>>()
-    private val searchService = ModuleSearchService()
+    private val searchService = ModuleSearchService(project)
 
     init {
         nameAuto = TextFieldWithAutoCompletion(project, nameFieldProvider, false, "")
+        sourceBox.renderer = SimpleListCellRenderer.create("") { it?.display() ?: "" }
         val form = FormBuilder.createFormBuilder()
-            .addLabeledComponent(JBLabel("模块名称"), nameAuto, 1, false)
-            .addLabeledComponent(JBLabel("作者"), authorField, 1, false)
-            .addLabeledComponent(JBLabel("版本号"), versionField, 1, false)
-            .addLabeledComponent(JBLabel("来源"), sourceBox, 1, false)
+            .addLabeledComponent(JBLabel(GoModuleBundle.message("ui.form.moduleName.label")), nameAuto, 1, false)
+            .addLabeledComponent(JBLabel(GoModuleBundle.message("ui.form.author.label")), authorField, 1, false)
+            .addLabeledComponent(JBLabel(GoModuleBundle.message("ui.form.version.label")), versionField, 1, false)
+            .addLabeledComponent(JBLabel(GoModuleBundle.message("ui.form.source.label")), sourceBox, 1, false)
             .addComponent(com.intellij.util.ui.JBUI.Panels.simplePanel(searchButton).addToRight(downloadButton))
             .panel
         form.border = JBUI.Borders.empty(8)
@@ -94,9 +100,9 @@ class GoModuleToolWindow(private val project: Project) {
             source = sourceBox.item,
             limit = 50
         )
-        object : Task.Backgroundable(project, "搜索 Go 模块", true) {
+        object : Task.Backgroundable(project, GoModuleBundle.message("search.task.title"), true) {
             override fun run(indicator: ProgressIndicator) {
-                indicator.text = "搜索中"
+                indicator.text = GoModuleBundle.message("search.inProgress")
                 val results = searchService.search(query)
                 ApplicationManager.getApplication().invokeLater {
                     tableModel.rowCount = 0
@@ -109,7 +115,7 @@ class GoModuleToolWindow(private val project: Project) {
     }
 
     private fun addRow(info: ModuleInfo) {
-        tableModel.addRow(arrayOf(info.module, info.latest ?: "", info.source.display))
+        tableModel.addRow(arrayOf(info.module, info.latest ?: "", info.source.display()))
     }
 
     private fun doDownload() {
@@ -130,7 +136,7 @@ class GoModuleToolWindow(private val project: Project) {
         if (versions.isEmpty()) return
         val popup = JBPopupFactory.getInstance()
             .createPopupChooserBuilder(versions)
-            .setTitle("选择版本")
+            .setTitle(GoModuleBundle.message("ui.versions.choose.title"))
             .setResizable(false)
             .setItemChosenCallback { chosen ->
                 selectedVersions[module] = chosen
@@ -138,5 +144,10 @@ class GoModuleToolWindow(private val project: Project) {
             }
             .createPopup()
         popup.showInFocusCenter()
+    }
+
+    fun refreshDefaults() {
+        val defSrc = GoModuleSettingsState.getInstance(project).state.defaultSource
+        sourceBox.selectedItem = Source.valueOf(defSrc)
     }
 }

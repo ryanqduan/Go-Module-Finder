@@ -1,4 +1,4 @@
-package dev.ryanduan.demoplugin.service
+package dev.ryanduan.gomodulefinder.service
 
 data class ModuleQuery(
     val name: String?,

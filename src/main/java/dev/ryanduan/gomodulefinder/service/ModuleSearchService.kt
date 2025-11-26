@@ -1,15 +1,16 @@
-package dev.ryanduan.demoplugin.service
+package dev.ryanduan.gomodulefinder.service
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.io.HttpRequests
+import com.intellij.openapi.project.Project
 import java.net.URLEncoder
-import dev.ryanduan.demoplugin.settings.GoModuleSettingsState
+import dev.ryanduan.gomodulefinder.settings.GoModuleSettingsState
 import com.intellij.openapi.project.ProjectManager
 import com.google.gson.JsonParser
 
-class ModuleSearchService {
+class ModuleSearchService(private val project: Project? = null) {
     private val logger = Logger.getInstance(ModuleSearchService::class.java)
-    private val librariesBase = "https://libraries.io/api"
+    private val librariesBase = System.getProperty("gomodule.librariesBase", "https://libraries.io/api")
 
     fun search(query: ModuleQuery): List<ModuleInfo> {
         return searchLibrariesIo(query)
@@ -18,7 +19,10 @@ class ModuleSearchService {
     private fun searchLibrariesIo(query: ModuleQuery): List<ModuleInfo> {
         val q = listOfNotNull(query.name, query.author, query.version).joinToString(" ").trim()
         if (q.isEmpty()) return emptyList()
-        val apiKey = GoModuleSettingsState.getInstance(ProjectManager.getInstance().defaultProject).state.librariesApiKey
+        val apiKey = runCatching {
+            val p = project ?: ProjectManager.getInstance().defaultProject
+            GoModuleSettingsState.getInstance(p).state.librariesApiKey
+        }.getOrNull().orEmpty()
         val url = "$librariesBase/search?q=" + URLEncoder.encode(q, "UTF-8") + "&platforms=Go&per_page=" + query.limit + if (apiKey.isNotBlank()) "&api_key=$apiKey" else ""
         return try {
             val body = HttpRequests.request(url)
@@ -27,7 +31,7 @@ class ModuleSearchService {
             modules.filter { it.platform.equals("Go", ignoreCase = true) }
                 .map { p ->
                     val versions = p.versions
-                    val latest = p.latest_release_number ?: versions?.firstOrNull()
+                    val latest = p.latestReleaseNumber ?: versions?.firstOrNull()
                     ModuleInfo(p.name, latest, Source.GODOC, versions)
                 }
         } catch (e: Exception) {
@@ -37,29 +41,35 @@ class ModuleSearchService {
     }
 
     private fun parseLibrariesProjects(json: String): List<LibProjectExt> {
-        val arr = try { JsonParser.parseString(json).asJsonArray } catch (e: Exception) { return emptyList() }
+        val arr = try {
+            JsonParser.parseString(json).asJsonArray
+        } catch (e: Exception) {
+            logger.warn("parseLibrariesProjects error", e)
+            return emptyList()
+        }
         val projects = mutableListOf<LibProjectExt>()
         for (el in arr) {
             val obj = el.asJsonObject
-            val nameEl = obj.get("name")
+            val nameEl = obj["name"]
             if (nameEl == null || nameEl.isJsonNull) continue
             val name = nameEl.asString
-            val platform = obj.get("platform")?.let { if (!it.isJsonNull) it.asString else "" } ?: ""
-            val latest = obj.get("latest_release_number")?.let { if (!it.isJsonNull) it.asString else null }
-            val homepage = obj.get("homepage")?.let { if (!it.isJsonNull) it.asString else null }
+            val platform = obj["platform"]?.let { if (!it.isJsonNull) it.asString else "" } ?: ""
+            val latest = obj["latest_release_number"]?.let { if (!it.isJsonNull) it.asString else null }
+            val homepage = obj["homepage"]?.let { if (!it.isJsonNull) it.asString else null }
             var versions: List<String>? = null
-            val versArr = obj.get("versions")?.let { if (!it.isJsonNull) it.asJsonArray else null }
+            val versArr = obj["versions"]?.let { if (!it.isJsonNull) it.asJsonArray else null }
             if (versArr != null) {
                 val items = mutableListOf<Pair<String, String?>>()
                 for (v in versArr) {
                     val vobj = v.asJsonObject
-                    val numEl = vobj.get("number")
+                    val numEl = vobj["number"]
                     if (numEl == null || numEl.isJsonNull) continue
                     val num = numEl.asString
-                    val date = vobj.get("published_at")?.let { if (!it.isJsonNull) it.asString else null }
+                    val date = vobj["published_at"]?.let { if (!it.isJsonNull) it.asString else null }
                     items.add(num to date)
                 }
-                versions = if (items.isNotEmpty()) items.sortedByDescending { it.second ?: "" }.map { it.first } else emptyList()
+                versions = if (items.isNotEmpty()) items.sortedByDescending { it.second ?: "" }
+                    .map { it.first } else emptyList()
             }
             projects.add(LibProjectExt(name, platform, latest, homepage, versions))
         }
@@ -69,7 +79,7 @@ class ModuleSearchService {
     private data class LibProjectExt(
         val name: String,
         val platform: String,
-        val latest_release_number: String?,
+        val latestReleaseNumber: String?,
         val homepage: String?,
         val versions: List<String>?
     )
