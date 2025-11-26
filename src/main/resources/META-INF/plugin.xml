@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <idea-plugin>
+	<idea-version since-build="231"/>
 	<!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
 	<id>dev.ryanduan.gomodulefinder</id>
 
@@ -12,53 +13,57 @@
 
 	<!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
 		 Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
-	<description><![CDATA[
-<p><b>中文</b></p>
-<p><b>Go Module Finder</b>：提供工具窗口，快速搜索并下载 Go 模块。</p>
-<ul>
-<li>模块搜索与自动补全：基于 <code>Libraries.io</code> 提供结果</li>
-<li>多数据源下载：官方 <code>GOPROXY</code>、<code>goproxy.io</code>、<code>goproxy.cn</code>、自定义代理</li>
-<li>版本选择：可选最新稳定版或指定版本，支持回退</li>
-<li>一键下载：运行 <code>go get module@version</code>，并展示进度与通知</li>
-<li>项目设置：默认源、<code>go</code> 命令路径、Libraries.io API Key、自定义代理</li>
-</ul>
-<p>使用方法：</p>
-<ol>
-<li>注册 <a href="https://libraries.io/">Libraries.io</a>，在 <a href="https://libraries.io/account">libraries.io/account</a> 获取 API Key</li>
-<li>打开插件，在设置页面填写 API Key</li>
-<li>打开 <code>Go Module Finder</code>，输入模块名并点击搜索</li>
-<li>选择模块，选择版本并点击下载</li>
-</ol>
-<hr/>
-<p><b>English</b></p>
-<p><b>Go Module Finder</b> adds a tool window to search Go modules and download them instantly.</p>
-<ul>
-<li>Module search and auto-completion powered by <code>Libraries.io</code></li>
-<li>Multiple download sources: official <code>GOPROXY</code>, <code>goproxy.io</code>, <code>goproxy.cn</code>, or a custom proxy</li>
-<li>Version selection: choose the latest stable or a specific version, with rollback support</li>
-<li>One-click download: runs <code>go get module@version</code> with progress and notifications</li>
-<li>Project settings: default source, <code>go</code> command path, Libraries.io API key, custom proxy</li>
-</ul>
-<p>How to use:</p>
-<ol>
-<li>Sign up at <a href="https://libraries.io/">Libraries.io</a> and get an API key from <a href="https://libraries.io/account">libraries.io/account</a></li>
-<li>Open the plugin and enter your API key in the settings page</li>
-<li>Open <code>Go Module Finder</code>, enter a module name, then click Search</li>
-<li>Select the module, pick a version, and click Download</li>
-</ol>
-<p>Homepage & feedback: <a href="https://www.ryanduan.dev/gomodulefinder">ryanduan.dev/gomodulefinder</a></p>
-	]]></description>
+	<description>
+		<![CDATA[
+			<p><b>English</b></p>
+			<p><b>Go Module Finder</b> adds a tool window to search Go modules and download them instantly.</p>
+			<ul>
+			<li>Module search and auto-completion powered by <code>Libraries.io</code></li>
+			<li>Multiple download sources: official <code>GOPROXY</code>, <code>goproxy.io</code>, <code>goproxy.cn</code>, or a custom proxy</li>
+			<li>Version selection: choose the latest stable or a specific version, with rollback support</li>
+			<li>One-click download: runs <code>go get module@version</code> with progress and notifications</li>
+			<li>Project settings: default source, <code>go</code> command path, Libraries.io API key, custom proxy</li>
+			</ul>
+			<p>How to use:</p>
+			<ol>
+			<li>Sign up at <a href="https://libraries.io/">Libraries.io</a> and get an API key from <a href="https://libraries.io/account">libraries.io/account</a></li>
+			<li>Open the plugin and enter your API key in the settings page</li>
+			<li>Open <code>Go Module Finder</code>, enter a module name, then click Search</li>
+			<li>Select the module, pick a version, and click Download</li>
+			</ol>
+			<p><b>中文</b></p>
+			<p><b>Go Module Finder</b>：提供工具窗口，快速搜索并下载 Go 模块。</p>
+			<ul>
+			<li>模块搜索与自动补全：基于 <code>Libraries.io</code> 提供结果</li>
+			<li>多数据源下载：官方 <code>GOPROXY</code>、<code>goproxy.io</code>、<code>goproxy.cn</code>、自定义代理</li>
+			<li>版本选择：可选最新稳定版或指定版本，支持回退</li>
+			<li>一键下载：运行 <code>go get module@version</code>，并展示进度与通知</li>
+			<li>项目设置：默认源、<code>go</code> 命令路径、Libraries.io API Key、自定义代理</li>
+			</ul>
+			<p>使用方法：</p>
+			<ol>
+			<li>注册 <a href="https://libraries.io/">Libraries.io</a>，在 <a href="https://libraries.io/account">libraries.io/account</a> 获取 API Key</li>
+			<li>打开插件，在设置页面填写 API Key</li>
+			<li>打开 <code>Go Module Finder</code>，输入模块名并点击搜索</li>
+			<li>选择模块，选择版本并点击下载</li>
+			</ol>
+			<hr/>
+			<p>Homepage & feedback: <a href="https://www.ryanduan.dev/gomodulefinder">ryanduan.dev/gomodulefinder</a></p>
+		]]>
+	</description>
 
 	<!-- Product and plugin compatibility requirements.
 		 Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
-<depends>com.intellij.modules.platform</depends>
+	<depends>com.intellij.modules.platform</depends>
 
 	<!-- Extension points defined by the plugin.
 		 Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
 	<resource-bundle>messages.GoModuleBundle</resource-bundle>
 	<extensions defaultExtensionNs="com.intellij">
-		<toolWindow id="Go Module Finder" anchor="left" factoryClass="dev.ryanduan.gomodulefinder.ui.GoModuleToolWindowFactory" stripeTitle="%toolwindow.id%"/>
+		<toolWindow id="Go Module Finder" anchor="left"
+			factoryClass="dev.ryanduan.gomodulefinder.ui.GoModuleToolWindowFactory"/>
 		<notificationGroup id="GoModulePlugin" displayType="BALLOON" isLogByDefault="true"/>
-		<projectConfigurable instance="dev.ryanduan.gomodulefinder.settings.GoModuleSettingsConfigurable" id="GoModuleFinderSettings" key="go.settings.displayName"/>
+		<projectConfigurable instance="dev.ryanduan.gomodulefinder.settings.GoModuleSettingsConfigurable"
+			id="GoModuleFinderSettings" key="go.settings.displayName"/>
 	</extensions>
 </idea-plugin>
